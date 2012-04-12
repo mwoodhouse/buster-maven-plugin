@@ -9,14 +9,7 @@ public class BusterMavenPluginTest
     @Test
     public void shouldRunTests() throws MojoExecutionException, MojoFailureException
     {
-        BusterMavenPlugin busterMavenPlugin = new BusterMavenPlugin();
-
-        busterMavenPlugin.setBusterJsFilePath("/Users/mwoodhouse/projects/mooTagify/test/buster.js");
-        busterMavenPlugin.setTestOutputPath("/Users/mwoodhouse/buster.xml");
-        busterMavenPlugin.setHostname("localhost");
-        busterMavenPlugin.setPort("1111");
-
-        busterMavenPlugin.execute();
+        // todo - add local tests...
     }
 
 }
