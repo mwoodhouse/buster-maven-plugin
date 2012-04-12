@@ -1,0 +1,137 @@
+package org.mw.buster;
+
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.mw.buster.junit_xstream.TestSuites;
+import org.mw.buster.result.JUnitFileAppender;
+import org.mw.buster.result.MavenTestResultLogger;
+
+import java.util.ArrayList;
+
+/**
+ * runs buster.js within maven
+ *
+ * @requiresDependencyResolution
+ * @goal buster
+ * @phase test
+ */
+public class BusterMavenPlugin extends AbstractMojo
+{
+    /**
+     * config file path
+     *
+     * @parameter
+     * @required
+     */
+    private String busterJsFilePath;
+
+    /**
+    * hostname
+    *
+    * @parameter
+    * @required
+    */
+    private String hostname;
+
+    /**
+    * port
+    *
+    * @parameter
+    * @required
+    */
+    private String port;
+
+    /**
+     * test output path
+     *
+     * @parameter
+     */
+    private String testOutputPath;
+
+    public void execute() throws MojoExecutionException, MojoFailureException
+    {
+        printBanner();
+
+        run(getArgs());
+    }
+
+    private void run(String[] args) throws MojoExecutionException, MojoFailureException
+    {
+        try
+        {
+            final TestSuites testSuites = new BusterProcessExecutor(getLog()).execute(args);
+
+            // todo put into TestResultHandler runner
+            new MavenTestResultLogger(getLog()).handle(testSuites);
+            new JUnitFileAppender(testOutputPath).handle(testSuites);
+
+            if (testSuites.shouldStopBuild())
+            {
+                throw new BusterProcessExecutorException("There are failed tests... :(");
+            }
+        }
+        catch(BusterProcessExecutorException bpe)
+        {
+            throw new MojoFailureException(bpe.getMessage());
+        }
+        catch (Exception e)
+        {
+            throw new MojoFailureException(e.getMessage());
+        }
+
+        System.out.println("\n");
+        System.out.println(" Buster.js Maven Plugin - Complete... :)");
+        System.out.println("\n");
+    }
+
+    private String[] getArgs()
+    {
+        final ArrayList<String> args = new ArrayList<String>();
+
+        // todo - sort out referencing of buster script, not very platform independent
+        args.add("/usr/local/bin/buster");
+
+        args.add("test");
+        args.add("--config");
+        args.add(busterJsFilePath);
+
+        if (testOutputPath != null)
+        {
+            args.add("-r");
+            args.add("xml");
+        }
+
+        args.add("-s");
+        args.add("http://"+hostname+":"+port);
+
+        return args.toArray(new String[] {});
+    }
+
+    private void printBanner()
+    {
+        getLog().info("-------------------------------------------");
+        getLog().info(" Buster.js Maven PLUGIN ");
+        getLog().info("-------------------------------------------");
+    }
+
+    public void setBusterJsFilePath(final String busterJsFilePath)
+    {
+        this.busterJsFilePath = busterJsFilePath;
+    }
+
+    public void setHostname(final String hostname)
+    {
+        this.hostname = hostname;
+    }
+
+    public void setPort(final String port)
+    {
+        this.port = port;
+    }
+
+    public void setTestOutputPath(final String testOutputPath)
+    {
+        this.testOutputPath = testOutputPath;
+    }
+}
