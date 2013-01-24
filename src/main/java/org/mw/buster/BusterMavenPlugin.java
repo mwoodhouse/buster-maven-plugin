@@ -8,6 +8,7 @@ import org.mw.buster.result.JUnitFileAppender;
 import org.mw.buster.result.MavenTestResultLogger;
 
 import java.util.ArrayList;
+import java.io.File;
 
 /**
  * runs buster.js within maven
@@ -43,11 +44,17 @@ public class BusterMavenPlugin extends AbstractMojo
     private String port;
 
     /**
+    * Directory containing the build files.
+    * @parameter expression="${project.build.directory}"
+    */
+    private File buildDirectory;
+
+    /**
      * test output path
      *
      * @parameter
      */
-    private String testOutputPath;
+    private String testOutputPath = "buster-tests";
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
@@ -64,7 +71,7 @@ public class BusterMavenPlugin extends AbstractMojo
 
             // todo put into TestResultHandler runner
             new MavenTestResultLogger(getLog()).handle(testSuites);
-            new JUnitFileAppender(testOutputPath).handle(testSuites);
+            new JUnitFileAppender(buildDirectory + File.separator + testOutputPath).handle(testSuites);
 
             if (testSuites.shouldStopBuild())
             {
@@ -90,7 +97,7 @@ public class BusterMavenPlugin extends AbstractMojo
         final ArrayList<String> args = new ArrayList<String>();
 
         // todo - sort out referencing of buster script, not very platform independent
-        args.add("/usr/local/bin/buster");
+        args.add("buster");
 
         args.add("test");
         args.add("--config");
