@@ -9,7 +9,7 @@
 
     <groupId>org.mw.buster</groupId>
     <artifactId>buster-maven-plugin</artifactId>
-    <version>1.4</version>
+    <version>1.4.1</version>
     <description>BusterJs Maven Plugin</description>
 
     <packaging>maven-plugin</packaging>
