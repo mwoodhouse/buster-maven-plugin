@@ -7,6 +7,7 @@ import org.mw.buster.junit_xstream.TestSuites;
 import org.mw.buster.result.JUnitFileAppender;
 import org.mw.buster.result.MavenTestResultLogger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.io.File;
 
@@ -14,7 +15,7 @@ import java.io.File;
  * runs buster.js within maven
  *
  * @requiresDependencyResolution
- * @goal buster
+ * @goal test
  * @phase test
  */
 public class BusterMavenPlugin extends AbstractMojo
@@ -28,25 +29,32 @@ public class BusterMavenPlugin extends AbstractMojo
     private String busterJsFilePath;
 
     /**
-    * hostname
-    *
-    * @parameter
-    * @required
-    */
+     * hostname
+     *
+     * @parameter
+     * @required
+     */
     private String hostname;
 
     /**
-    * port
-    *
-    * @parameter
-    * @required
-    */
+     * port
+     *
+     * @parameter
+     * @required
+     */
     private String port;
 
     /**
-    * Directory containing the build files.
-    * @parameter expression="${project.build.directory}"
-    */
+     * use local buster sever
+     *
+     * @parameter
+     */
+    private boolean localBusterServer = false;
+
+    /**
+     * Directory containing the build files.
+     * @parameter expression="${project.build.directory}"
+     */
     private File buildDirectory;
 
     /**
@@ -56,11 +64,36 @@ public class BusterMavenPlugin extends AbstractMojo
      */
     private String testOutputPath = "buster-tests";
 
+    private BusterServerProcessExecutor server;
+
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         printBanner();
+        System.out.println("Localbuster: " + localBusterServer);
+        if(localBusterServer) {
+            executeWithLocalBuster();
 
+        } else {
+            executeWithEmbeddedBuster();
+        }
+    }
+
+    private void executeWithLocalBuster() throws MojoFailureException, MojoExecutionException {
         run(getArgs());
+    }
+
+    private void executeWithEmbeddedBuster() throws MojoFailureException, MojoExecutionException {
+        server = new BusterServerProcessExecutor(getLog());
+        try{
+            server.start()
+                    .captureBrowser();
+
+            run(getArgs());
+            server.stop();
+        }
+        catch (IOException e){
+            getLog().error(e);
+        }
     }
 
     private void run(String[] args) throws MojoExecutionException, MojoFailureException
@@ -135,6 +168,10 @@ public class BusterMavenPlugin extends AbstractMojo
     public void setPort(final String port)
     {
         this.port = port;
+    }
+
+    public void setLocalBusterServer(final boolean localBusterServer) {
+        this.localBusterServer = localBusterServer;
     }
 
     public void setTestOutputPath(final String testOutputPath)
