@@ -33,9 +33,10 @@ public class BusterServerProcessExecutor {
         }
     }
 
-    public BusterServerProcessExecutor stop(){
+    public BusterServerProcessExecutor stop() {
         log.info("STOPPING SERVER");
         process.destroy();
+        browser.stop();
         return this;
     }
 
