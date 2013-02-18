@@ -83,10 +83,12 @@ public class BusterMavenPlugin extends AbstractMojo
     }
 
     private void executeWithEmbeddedBuster() throws MojoFailureException, MojoExecutionException {
-        server = new BusterServerProcessExecutor(getLog());
+
+        server = new BusterServerProcessExecutor(new PluginProcess(getLog()),
+                                                 new PhantomJsBrowser());
         try{
             server.start()
-                    .captureBrowser();
+                  .captureBrowser();
 
             run(getArgs());
             server.stop();
