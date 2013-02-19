@@ -6,6 +6,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.mw.buster.junit_xstream.TestSuites;
 import org.mw.buster.result.JUnitFileAppender;
 import org.mw.buster.result.MavenTestResultLogger;
+import org.mw.buster.utils.ServerUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +33,6 @@ public class BusterMavenPlugin extends AbstractMojo
      * hostname
      *
      * @parameter
-     * @required
      */
     private String hostname;
 
@@ -40,16 +40,15 @@ public class BusterMavenPlugin extends AbstractMojo
      * port
      *
      * @parameter
-     * @required
      */
     private String port;
 
     /**
-     * use local buster sever
+     * start buster sever from the plugin and use phantomjs to run the tests
      *
      * @parameter
      */
-    private boolean localBusterServer = false;
+    private boolean embeddedBusterServer = false;
 
     /**
      * Directory containing the build files.
@@ -69,12 +68,11 @@ public class BusterMavenPlugin extends AbstractMojo
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         printBanner();
-        System.out.println("Localbuster: " + localBusterServer);
-        if(localBusterServer) {
-            executeWithLocalBuster();
-
-        } else {
+        System.out.println("Embedded: " + embeddedBusterServer);
+        if(embeddedBusterServer) {
             executeWithEmbeddedBuster();
+        } else {
+            executeWithLocalBuster();
         }
     }
 
@@ -84,17 +82,22 @@ public class BusterMavenPlugin extends AbstractMojo
 
     private void executeWithEmbeddedBuster() throws MojoFailureException, MojoExecutionException {
 
-        server = new BusterServerProcessExecutor(new PluginProcess(getLog()),
+        // Setting a random available port, and setting hostname to localhost
+        port = ServerUtil.newAvailablePort();
+        hostname = "localhost";
+
+        server = new BusterServerProcessExecutor(new PluginProcess(port, getLog()),
                                                  new PhantomJsBrowser());
         try{
             server.start()
                   .captureBrowser();
 
             run(getArgs());
-            server.stop();
         }
         catch (IOException e){
             getLog().error(e);
+        } finally {
+            server.stop();
         }
     }
 
@@ -172,8 +175,8 @@ public class BusterMavenPlugin extends AbstractMojo
         this.port = port;
     }
 
-    public void setLocalBusterServer(final boolean localBusterServer) {
-        this.localBusterServer = localBusterServer;
+    public void setEmbeddedBusterServer(boolean embeddedBusterServer) {
+        this.embeddedBusterServer = embeddedBusterServer;
     }
 
     public void setTestOutputPath(final String testOutputPath)

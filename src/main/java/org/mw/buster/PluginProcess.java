@@ -6,14 +6,16 @@ import java.io.IOException;
 
 public class PluginProcess {
 
-    private ProcessBuilder pb;
+    ProcessBuilder pb;
+
     private Process process;
     private String port = "1111";
     private Log log;
 
-    public PluginProcess(Log log) {
+    public PluginProcess(String port, Log log) {
         this.log = log;
-        this.pb = new ProcessBuilder("buster", "server", "-p", port);
+        this.port = port;
+        this.pb = new ProcessBuilder("buster-server", "-p", port);
     }
 
     public void start(){

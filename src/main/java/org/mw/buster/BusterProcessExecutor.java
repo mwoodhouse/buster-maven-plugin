@@ -32,7 +32,7 @@ public class BusterProcessExecutor
             String line;
             for (line = inputReader.readLine(); line != null; line = inputReader.readLine())
             {
-                if(!line.matches("^JOIN.*")){
+                if(!line.matches("^Line: JOIN.*")){
                     output.append(line).append("\n");
                 }
             }
