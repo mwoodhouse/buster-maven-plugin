@@ -11,7 +11,6 @@
     <artifactId>buster-maven-plugin</artifactId>
     <version>1.4.2-SNAPSHOT</version>
     <description>BusterJs Maven Plugin</description>
-
     <packaging>maven-plugin</packaging>
 
     <properties>
