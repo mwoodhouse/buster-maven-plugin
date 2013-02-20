@@ -16,7 +16,6 @@ The plugin has 2 modes;
 * **With embedded buster server**, where the plugin will start a buster server on a random port and use [PhantomJS](http://phantomjs.org/) as a headless browser to capture the tests.
 
 #### With local buster server
-
 	<plugin>
 		<groupId>org.mw.buster</groupId>
 		<artifactId>buster-maven-plugin</artifactId>
@@ -31,7 +30,7 @@ The plugin has 2 modes;
 
 #### With embedded buster server and PhantomJS
 
-For this mode to work you will need to install **PhantomJS* and be accessible on PATH
+For this mode to work you will need to install **PhantomJS** and be accessible on PATH
 
 	<plugin>
 		<groupId>org.mw.buster</groupId>
@@ -54,8 +53,8 @@ For this mode to work you will need to install **PhantomJS* and be accessible on
 				<version>${version.phantomjs}</version>
 			</dependency>
 		</dependencies>
-	</plugin>	
+	</plugin>
 
 ### Running tests
 
-    *mvn buster:test*
+	mvn buster:test
