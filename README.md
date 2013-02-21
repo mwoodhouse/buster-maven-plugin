@@ -1,3 +1,4 @@
+
 # buster-maven-plugin
 
 A maven plugin for running [BusterJS](http://busterjs.org) tests.
@@ -10,8 +11,9 @@ For the moment, this plugin does not exists in the public maven repo. So for now
 ### Configure plugin
 
 The plugin has 2 modes;
-- **With local buster server** where it will use a local running buster. You need to start a buster server manually and use the desired browser to capture the tests, then run the buster test goal.
-- **With embedded buster server** where the plugin will start a buster server on a random port and use [PhantomJS](http://phantomjs.org/) as a headless browser to capture the tests.
+
+* **With local buster server**, where it will use a local running buster. You need to start a buster server manually and use the desired browser to capture the tests, then run the buster test goal.
+* **With embedded buster server**, where the plugin will start a buster server on a random port and use [PhantomJS](http://phantomjs.org/) as a headless browser to capture the tests.
 
 #### With local buster server
 
@@ -53,3 +55,7 @@ For this mode to work you will need to install **PhantomJS* and be accessible on
 			</dependency>
 		</dependencies>
 	</plugin>	
+
+### Running tests
+
+    *mvn buster:test*
