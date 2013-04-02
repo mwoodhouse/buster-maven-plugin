@@ -57,6 +57,12 @@ public class BusterMavenPlugin extends AbstractMojo
     private File buildDirectory;
 
     /**
+     * Fail on warnings at this level. One of fatal, error, warning.
+     * @parameter
+     */
+    private String failOn;
+
+    /**
      * test output path
      *
      * @parameter
@@ -145,6 +151,20 @@ public class BusterMavenPlugin extends AbstractMojo
         {
             args.add("-r");
             args.add("xml");
+        }
+
+        if (failOn != null)
+        {
+            if (!(failOn.equals("warning") ||
+                  failOn.equals("error") ||
+                  failOn.equals("fatal")))
+            {
+                throw new IllegalArgumentException("failOn was " + failOn +
+                                                   ", but can only be one of " +
+                                                   "warning, error or fatal.");
+            }
+            args.add("-F");
+            args.add(failOn);
         }
 
         args.add("-s");
