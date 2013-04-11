@@ -25,6 +25,7 @@ The plugin has 2 modes;
 			<hostname>localhost</hostname>
 			<port>1234</port>
 			<buildDirectory>${project.build.directory}</buildDirectory>
+			<skip>false</skip>
 		</configuration>
 	</plugin>
 
@@ -40,6 +41,7 @@ For this mode to work you will need to install **PhantomJS** and be accessible o
 			<busterJsFilePath>${basedir}/src/test/javascript/buster.js</busterJsFilePath>
 			<embeddedBusterServer>true</embeddedBusterServer>
 			<buildDirectory>${project.build.directory}</buildDirectory>
+			<skip>false</skip>
 		</configuration>
 		<dependencies>
 			<dependency>

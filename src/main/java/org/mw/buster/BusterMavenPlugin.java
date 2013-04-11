@@ -63,6 +63,13 @@ public class BusterMavenPlugin extends AbstractMojo
     private String failOn;
 
     /**
+     * Whether the test should be skipped
+     *
+     * @parameter
+     */
+    private boolean skip;
+
+    /**
      * test output path
      *
      * @parameter
@@ -73,6 +80,11 @@ public class BusterMavenPlugin extends AbstractMojo
 
     public void execute() throws MojoExecutionException, MojoFailureException
     {
+        if (skip) {
+            getLog().info("Skipping Buster tests.");
+            return;
+        }
+
         printBanner();
         System.out.println("Embedded: " + embeddedBusterServer);
         if(embeddedBusterServer) {
