@@ -119,10 +119,24 @@ public class BusterMavenPlugin extends AbstractMojo
         }
     }
 
+    static String join(String[] s, String delimiter) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < s.length; i++) {
+            if (i > 0) {
+                builder.append(delimiter);
+            }
+            builder.append(s[i]);
+        }
+        return builder.toString();
+    }
+
     private void run(String[] args) throws MojoExecutionException, MojoFailureException
     {
         try
         {
+            getLog().info("Running this command for buster:");
+            getLog().info(join(args, " "));
+
             final TestSuites testSuites = new BusterProcessExecutor(getLog()).execute(args);
 
             // todo put into TestResultHandler runner
