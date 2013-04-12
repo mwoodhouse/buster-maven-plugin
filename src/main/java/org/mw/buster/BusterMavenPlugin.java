@@ -153,9 +153,7 @@ public class BusterMavenPlugin extends AbstractMojo
         final ArrayList<String> args = new ArrayList<String>();
 
         // todo - sort out referencing of buster script, not very platform independent
-        args.add("buster");
-
-        args.add("test");
+        args.add("buster-test");
         args.add("--config");
         args.add(busterJsFilePath);
 
