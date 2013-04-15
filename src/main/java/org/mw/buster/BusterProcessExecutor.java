@@ -67,10 +67,15 @@ public class BusterProcessExecutor
 
     private void checkForFailure(final String processOutput) throws BusterProcessExecutorException
     {
+        if (!processOutput.trim().startsWith("<")) {
+            log.error(processOutput);
+            throw new BusterProcessExecutorException("buster output is not XML");
+        }
         for (String failureCondition : FAILURE_CONDITIONS)
         {
             if (processOutput.contains(failureCondition))
             {
+                log.error(processOutput);
                 throw new BusterProcessExecutorException(failureCondition);
             }
         }
