@@ -7,6 +7,8 @@ import org.mw.buster.junit_xstream.TestSuites;
 import org.mw.buster.result.JUnitFileAppender;
 import org.mw.buster.result.MavenTestResultLogger;
 import org.mw.buster.utils.ServerUtil;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,7 +88,6 @@ public class BusterMavenPlugin extends AbstractMojo
         }
 
         printBanner();
-        System.out.println("Embedded: " + embeddedBusterServer);
         if(embeddedBusterServer) {
             executeWithEmbeddedBuster();
         } else {
@@ -95,17 +96,22 @@ public class BusterMavenPlugin extends AbstractMojo
     }
 
     private void executeWithLocalBuster() throws MojoFailureException, MojoExecutionException {
+        getLog().info("Running with local buster.");
         run(getArgs());
     }
 
     private void executeWithEmbeddedBuster() throws MojoFailureException, MojoExecutionException {
+        getLog().info("Running with embedded buster.");
+
+        PhantomJSDriver driver = new PhantomJSDriver(new DesiredCapabilities());
 
         // Setting a random available port, and setting hostname to localhost
         port = ServerUtil.newAvailablePort();
         hostname = "localhost";
 
+
         server = new BusterServerProcessExecutor(new PluginProcess(port, getLog()),
-                                                 new PhantomJsBrowser());
+                                                 new PhantomJsBrowser(driver, getLog()));
         try{
             server.start()
                   .captureBrowser();
