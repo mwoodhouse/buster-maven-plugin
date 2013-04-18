@@ -45,12 +45,26 @@ public class BusterServerProcessExecutorTest {
 
     @Test
     public void shouldCaptureBrowser() throws IOException {
-        when(mockBrowser.capturePhantomBrowser(any(String.class))).thenReturn(true);
         when(mockProcess.getPort()).thenReturn("1111");
+        when(mockBrowser.capturePhantomBrowser(any(String.class))).thenReturn(true);
 
         busterServer.captureBrowser();
 
         verify(mockBrowser, times(1)).capturePhantomBrowser(String.format("http://localhost:1111"));
+        verifyNoMoreInteractions(mockBrowser);
+    }
+
+    @Test
+    public void shouldCaptureBrowserOnThirdAttempt() throws IOException {
+        when(mockProcess.getPort()).thenReturn("1111");
+        when(mockBrowser.capturePhantomBrowser(any(String.class)))
+                .thenReturn(false)
+                .thenReturn(false)
+                .thenReturn(true);
+
+        busterServer.captureBrowser();
+
+        verify(mockBrowser, times(3)).capturePhantomBrowser(String.format("http://localhost:1111"));
         verifyNoMoreInteractions(mockBrowser);
     }
 
@@ -62,6 +76,7 @@ public class BusterServerProcessExecutorTest {
         busterServer.captureBrowser();
 
         verify(mockBrowser, times(10)).capturePhantomBrowser(any(String.class));
+        verifyNoMoreInteractions(mockBrowser);
     }
 
 }
