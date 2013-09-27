@@ -12,10 +12,10 @@ public class PluginProcess {
     private String port = "1111";
     private Log log;
 
-    public PluginProcess(String port, Log log) {
+    public PluginProcess(String port, Log log, String executablesFilePath) {
         this.log = log;
         this.port = port;
-        this.pb = new ProcessBuilder("buster-server", "-p", port);
+        this.pb = new ProcessBuilder(executablesFilePath + "buster-server", "-p", port);
     }
 
     public void start(){

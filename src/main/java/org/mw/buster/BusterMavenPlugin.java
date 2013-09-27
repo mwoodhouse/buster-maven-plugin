@@ -8,6 +8,7 @@ import org.mw.buster.result.JUnitFileAppender;
 import org.mw.buster.result.MavenTestResultLogger;
 import org.mw.buster.utils.ServerUtil;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.IOException;
@@ -29,7 +30,23 @@ public class BusterMavenPlugin extends AbstractMojo
      * @parameter
      * @required
      */
-    private String busterJsFilePath;
+    private String configFilePath;
+
+    /**
+     * path to the buster executables' directory
+     *
+     * @parameter
+     * @required
+     */
+    private String executablesDirectory = "";
+
+    /**
+     * path to the phantomjs executable
+     *
+     * @parameter
+     * @required
+     */
+    private String phantomjsFilePath;
 
     /**
      * hostname
@@ -103,14 +120,20 @@ public class BusterMavenPlugin extends AbstractMojo
     private void executeWithEmbeddedBuster() throws MojoFailureException, MojoExecutionException {
         getLog().info("Running with embedded buster.");
 
-        PhantomJSDriver driver = new PhantomJSDriver(new DesiredCapabilities());
+        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+
+        if (phantomjsFilePath != null) {
+            desiredCapabilities.setCapability(
+                PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, phantomjsFilePath);
+        }
+
+        PhantomJSDriver driver = new PhantomJSDriver(desiredCapabilities);
 
         // Setting a random available port, and setting hostname to localhost
         port = ServerUtil.newAvailablePort();
         hostname = "localhost";
 
-
-        server = new BusterServerProcessExecutor(new PluginProcess(port, getLog()),
+        server = new BusterServerProcessExecutor(new PluginProcess(port, getLog(), executablesDirectory),
                                                  new PhantomJsBrowser(driver, getLog()));
         try{
             server.start()
@@ -173,9 +196,9 @@ public class BusterMavenPlugin extends AbstractMojo
         final ArrayList<String> args = new ArrayList<String>();
 
         // todo - sort out referencing of buster script, not very platform independent
-        args.add("buster-test");
+        args.add(executablesDirectory + "buster-test");
         args.add("--config");
-        args.add(busterJsFilePath);
+        args.add(configFilePath);
 
         if (testOutputPath != null)
         {
@@ -210,9 +233,9 @@ public class BusterMavenPlugin extends AbstractMojo
         getLog().info("-------------------------------------------");
     }
 
-    public void setBusterJsFilePath(final String busterJsFilePath)
+    public void setConfigFilePath(final String configFilePath)
     {
-        this.busterJsFilePath = busterJsFilePath;
+        this.configFilePath = configFilePath;
     }
 
     public void setHostname(final String hostname)
