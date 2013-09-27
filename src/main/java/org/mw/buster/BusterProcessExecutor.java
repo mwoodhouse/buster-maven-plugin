@@ -32,7 +32,9 @@ public class BusterProcessExecutor
             String line;
             for (line = inputReader.readLine(); line != null; line = inputReader.readLine())
             {
-                output.append(line).append("\n");
+                if(!line.matches("^Line: JOIN.*")){
+                    output.append(line).append("\n");
+                }
             }
 
             process.waitFor();
@@ -57,7 +59,7 @@ public class BusterProcessExecutor
 
         // todo - this is not very platform independent
         // set env path variable for node / buster
-        pb.environment().put("PATH", pb.environment().get("PATH") + ":/usr/local/bin");
+//        pb.environment().put("PATH", pb.environment().get("PATH") + ":/usr/local/bin");
         pb.redirectErrorStream(true);
 
         return pb.start();
@@ -65,10 +67,15 @@ public class BusterProcessExecutor
 
     private void checkForFailure(final String processOutput) throws BusterProcessExecutorException
     {
+        if (!processOutput.trim().startsWith("<")) {
+            log.error(processOutput);
+            throw new BusterProcessExecutorException("buster output is not XML");
+        }
         for (String failureCondition : FAILURE_CONDITIONS)
         {
             if (processOutput.contains(failureCondition))
             {
+                log.error(processOutput);
                 throw new BusterProcessExecutorException(failureCondition);
             }
         }
